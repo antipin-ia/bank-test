@@ -19,6 +19,7 @@ export const FileListItem = ({ item, onOpenFolder, onToggleFavorite, isFavoriteP
 
   const handleToggleFavorite = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
+    event.preventDefault()
     onToggleFavorite(item.id)
   }
 
