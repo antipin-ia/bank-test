@@ -6,28 +6,29 @@ import styles from './App.module.css'
 
 const FolderRoute = () => {
   const { id } = useParams<{ id: string }>()
-  const store = useAppStore()
 
-  useEffect(() => {
-    void store.loadData()
-  }, [store])
+  const setCurrentFolder = useAppStore((state) => state.setCurrentFolder)
+  const isLoading = useAppStore((state) => state.isLoading)
+  const isInitialized = useAppStore((state) => state.isInitialized)
+  const error = useAppStore((state) => state.error)
+  const loadData = useAppStore((state) => state.loadData)
 
   useEffect(() => {
     if (!id) return
     const folderId = Number.parseInt(id, 10)
     if (Number.isNaN(folderId)) return
-    store.setCurrentFolder(folderId)
-  }, [id, store])
+    setCurrentFolder(folderId)
+  }, [id, setCurrentFolder])
 
-  if (store.isLoading && !store.isInitialized) {
+  if (isLoading && !isInitialized) {
     return <div className={styles.centered}>Загрузка...</div>
   }
 
-  if (store.error) {
+  if (error) {
     return (
       <div className={styles.centered}>
-        <p>{store.error}</p>
-        <button type="button" onClick={() => store.loadData()}>
+        <p>{error}</p>
+        <button type="button" onClick={() => loadData()}>
           Повторить
         </button>
       </div>
@@ -38,7 +39,9 @@ const FolderRoute = () => {
 }
 
 const AppInner = () => {
-  const { rootId, isInitialized, loadData } = useAppStore()
+  const rootId = useAppStore((state) => state.rootId)
+  const isInitialized = useAppStore((state) => state.isInitialized)
+  const loadData = useAppStore((state) => state.loadData)
 
   useEffect(() => {
     void loadData()

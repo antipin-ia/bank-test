@@ -9,6 +9,7 @@ export const FileBrowser = () => {
   const store = useAppStore()
   const navigate = useNavigate()
 
+  const rootId = useAppStore((state) => state.rootId)
   const { currentFolderId, getFolderChildren, getFolderPath, pendingFavoriteIds } = store
 
   const children = useMemo(
@@ -20,6 +21,8 @@ export const FileBrowser = () => {
     () => getFolderPath(currentFolderId),
     [getFolderPath, currentFolderId],
   )
+
+  const isRootFolder = rootId !== null && currentFolderId === rootId
 
   const handleOpenFolder = (id: number) => {
     store.setCurrentFolder(id)
@@ -37,8 +40,11 @@ export const FileBrowser = () => {
           📁
         </div>
         <div className={styles.headerText}>
-          <h1 className={styles.title}>Ваши файлы</h1>
-          <Breadcrumbs items={path} onNavigate={handleOpenFolder} />
+          {isRootFolder ? (
+            <h1 className={styles.title}>Ваши файлы</h1>
+          ) : (
+            <Breadcrumbs items={path} onNavigate={handleOpenFolder} />
+          )}
         </div>
       </header>
 
