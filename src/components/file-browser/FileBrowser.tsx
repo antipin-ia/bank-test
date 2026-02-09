@@ -1,16 +1,24 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../../store/useAppStore'
+import { Breadcrumbs } from './Breadcrumbs'
+import { FileList } from './FileList'
+import styles from './FileBrowser.module.css'
 
 export const FileBrowser = () => {
   const store = useAppStore()
   const navigate = useNavigate()
 
-  const { currentFolderId, getFolderChildren } = store
+  const { currentFolderId, getFolderChildren, getFolderPath, pendingFavoriteIds } = store
 
   const children = useMemo(
     () => getFolderChildren(currentFolderId),
     [getFolderChildren, currentFolderId],
+  )
+
+  const path = useMemo(
+    () => getFolderPath(currentFolderId),
+    [getFolderPath, currentFolderId],
   )
 
   const handleOpenFolder = (id: number) => {
@@ -18,24 +26,30 @@ export const FileBrowser = () => {
     navigate(`/folder/${id}`)
   }
 
+  const handleToggleFavorite = (id: number) => {
+    void store.toggleFavorite(id)
+  }
+
   return (
-    <div>
-      <h1>Ваши файлы</h1>
-      <ul>
-        {children.map((item) => (
-          <li key={item.id}>
-            {item.type === 'dir' ? (
-              <button type="button" onClick={() => handleOpenFolder(item.id)}>
-                [DIR] {item.name}
-              </button>
-            ) : (
-              <span>
-                [FILE] {item.name} {item.isFavorite ? '★' : ''}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
+    <div className={styles.wrapper}>
+      <header className={styles.header}>
+        <div className={styles.icon} aria-hidden="true">
+          📁
+        </div>
+        <div className={styles.headerText}>
+          <h1 className={styles.title}>Ваши файлы</h1>
+          <Breadcrumbs items={path} onNavigate={handleOpenFolder} />
+        </div>
+      </header>
+
+      <main className={styles.content}>
+        <FileList
+          items={children}
+          onOpenFolder={handleOpenFolder}
+          onToggleFavorite={handleToggleFavorite}
+          pendingFavoriteIds={pendingFavoriteIds}
+        />
+      </main>
     </div>
   )
 }
