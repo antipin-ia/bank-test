@@ -1,0 +1,78 @@
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  gap: 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.folder {
+  cursor: pointer;
+}
+
+.folder:hover {
+  background-color: #eef2ff;
+}
+
+.file:hover {
+  background-color: #f3f4f6;
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.name {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.favoriteButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  padding: 4px 10px;
+  background: #ffffff;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.favoriteButton:hover:not(:disabled) {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.favoriteButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.favoriteActive {
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.favoriteIcon {
+  font-size: 14px;
+}
+
+.favoriteLabel {
+  white-space: nowrap;
+}
