@@ -97,11 +97,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   async toggleFavorite(id) {
-    const { pendingFavoriteIds } = get()
+    const { pendingFavoriteIds, itemsById } = get()
 
     if (pendingFavoriteIds.has(id)) {
       return
     }
+
+    const target = itemsById.get(id)
+    if (!target) {
+      return
+    }
+
+    const newValue = !target.isFavorite
 
     const nextPending = new Set(pendingFavoriteIds)
     nextPending.add(id)
@@ -113,15 +120,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           setTimeout(() => resolve(), 400)
         })
 
-      const { items, itemsById } = get()
+      const { items } = get()
 
-      const target = itemsById.get(id)
-      if (!target) {
-        throw new Error('Элемент не найден')
-      }
-
-      const nextIsFavorite = !target.isFavorite
-      target.isFavorite = nextIsFavorite
+      target.isFavorite = newValue
 
       const updatedItems = items.map((item) => (item.id === id ? target : item))
 

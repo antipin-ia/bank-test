@@ -6,11 +6,15 @@ import { FileList } from './FileList'
 import styles from './FileBrowser.module.css'
 
 export const FileBrowser = () => {
-  const store = useAppStore()
   const navigate = useNavigate()
 
   const rootId = useAppStore((state) => state.rootId)
-  const { currentFolderId, getFolderChildren, getFolderPath, pendingFavoriteIds } = store
+  const currentFolderId = useAppStore((state) => state.currentFolderId)
+  const getFolderChildren = useAppStore((state) => state.getFolderChildren)
+  const getFolderPath = useAppStore((state) => state.getFolderPath)
+  const pendingFavoriteIds = useAppStore((state) => state.pendingFavoriteIds)
+  const setCurrentFolder = useAppStore((state) => state.setCurrentFolder)
+  const toggleFavorite = useAppStore((state) => state.toggleFavorite)
 
   const children = useMemo(
     () => getFolderChildren(currentFolderId),
@@ -25,12 +29,12 @@ export const FileBrowser = () => {
   const isRootFolder = rootId !== null && currentFolderId === rootId
 
   const handleOpenFolder = (id: number) => {
-    store.setCurrentFolder(id)
+    setCurrentFolder(id)
     navigate(`/folder/${id}`)
   }
 
   const handleToggleFavorite = (id: number) => {
-    void store.toggleFavorite(id)
+    void toggleFavorite(id)
   }
 
   return (
