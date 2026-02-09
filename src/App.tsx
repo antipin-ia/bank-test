@@ -1,34 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useAppStore } from './store/useAppStore'
+import { FileBrowser } from './components/file-browser/FileBrowser'
+import styles from './App.module.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const FolderRoute = () => {
+  const { id } = useParams<{ id: string }>()
+  const store = useAppStore()
+
+  useEffect(() => {
+    void store.loadData()
+  }, [store])
+
+  useEffect(() => {
+    if (!id) return
+    const folderId = Number.parseInt(id, 10)
+    if (Number.isNaN(folderId)) return
+    store.setCurrentFolder(folderId)
+  }, [id, store])
+
+  if (store.isLoading && !store.isInitialized) {
+    return <div className={styles.centered}>Загрузка...</div>
+  }
+
+  if (store.error) {
+    return (
+      <div className={styles.centered}>
+        <p>{store.error}</p>
+        <button type="button" onClick={() => store.loadData()}>
+          Повторить
+        </button>
+      </div>
+    )
+  }
+
+  return <FileBrowser />
+}
+
+const AppInner = () => {
+  const { rootId, isInitialized, loadData } = useAppStore()
+
+  useEffect(() => {
+    void loadData()
+  }, [loadData])
+
+  if (!isInitialized) {
+    return <div className={styles.centered}>Загрузка...</div>
+  }
+
+  if (rootId == null) {
+    return <div className={styles.centered}>Корневая папка не найдена</div>
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Routes>
+      <Route path="/" element={<Navigate to={`/folder/${rootId}`} replace />} />
+      <Route path="/folder/:id" element={<FolderRoute />} />
+      <Route path="*" element={<Navigate to={`/folder/${rootId}`} replace />} />
+    </Routes>
+  )
+}
+
+function App() {
+  return (
+    <div className={styles.app}>
+      <AppInner />
+    </div>
   )
 }
 
